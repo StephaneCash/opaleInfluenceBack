@@ -16,8 +16,18 @@ const getAllImages = async (req, res) => {
 
 const createImage = async (req, res) => {
     try {
-        let newImage = await db.images.create(req.body);
-        res.status(201).json({ message: "Image créée avec succès", data: newImage })
+        const { nom, description } = req.body;
+        if (req.file) {
+            let newImage = await db.images.create({
+                nom: nom,
+                description: description,
+                url: `api/${req.file.path}`
+            });
+            res.status(201).json({ message: "Image créée avec succès", data: newImage })
+        } else {
+            let newImage = await db.images.create(req.body);
+            res.status(201).json({ message: "Image créée avec succès", data: newImage })
+        }
     } catch (err) {
         if (err instanceof ValidationError) {
             return res.status(400).json({
