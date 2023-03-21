@@ -27,8 +27,19 @@ const getAllArticles = async (req, res) => {
 
 const createArticle = async (req, res) => {
     try {
-        let newArticle = await db.articles.create(req.body);
-        res.status(201).json({ message: "Article créé avec succès", data: newArticle })
+        const { nom, description, detail } = req.body;
+        if (req.file) {
+            let newArticle = await db.articles.create({
+                nom: nom,
+                description: description,
+                detail: detail,
+                url: `api/${req.file.path}`
+            });
+            res.status(201).json({ message: "Article créé avec succès", data: newArticle })
+        } else {
+            let newArticle = await db.articles.create(req.body);
+            res.status(201).json({ message: "Article créé avec succès", data: newArticle })
+        }
     } catch (err) {
         if (err instanceof ValidationError) {
             return res.status(400).json({
@@ -72,15 +83,32 @@ const articleUpdated = async (req, res) => {
         let findArticle = await db.articles.findOne({ where: { id: id } });
 
         if (findArticle) {
-            let updateArticle = await findArticle.update(req.body, {
-                where: { id: id }
-            });
-            if (updateArticle) {
-                let findArticle = await db.articles.findOne({ where: { id: id } });
-                res.status(200).json({ message: "Article a été modifiée avec succès", data: findArticle });
+            const { nom, description, detail } = req.body;
+
+            if (req.file) {
+                let updateArticle = await findArticle.update({
+                    nom: nom,
+                    description: description,
+                    detail: detail,
+                    url: `api/${req.file.path}`
+                }, {
+                    where: { id: id }
+                });
+                if (updateArticle) {
+                    let findArticle = await db.articles.findOne({ where: { id: id } });
+                    res.status(200).json({ message: "Article a été modifié avec succès", data: findArticle });
+                }
+            } else {
+                let updateArticle = await findArticle.update(req.body, {
+                    where: { id: id }
+                });
+                if (updateArticle) {
+                    let findArticle = await db.articles.findOne({ where: { id: id } });
+                    res.status(200).json({ message: "Article a été modifié avec succès", data: findArticle });
+                }
             }
         } else {
-            res.status(404).json({ message: "Article non trouvée avec l'id : " + id });
+            res.status(404).json({ message: "Article non trouvé avec l'id : " + id });
         }
     } catch (error) {
         return res.status(500).json({ message: error });
@@ -95,10 +123,10 @@ const deleteArticle = async (req, res) => {
         if (findArticle) {
             let articleDel = await db.articles.destroy({ where: { id: id } });
             if (articleDel === 1) {
-                res.status(200).json({ message: "Article a été supprimée avec succès", data: findArticle });
+                res.status(200).json({ message: "Article a été supprimé avec succès", data: findArticle });
             }
         } else {
-            res.status(404).json({ message: "Article non trouvée avec l'id : " + id });
+            res.status(404).json({ message: "Article non trouvé avec l'id : " + id });
         }
 
     } catch (error) {
