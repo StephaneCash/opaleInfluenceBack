@@ -15,7 +15,7 @@ const getAllUsers = (req, res) => {
             res.status(200).json({ message: message, data: resp, taille });
         })
         .catch(err => {
-            return res.status(500).json('Erreurs :: ' + err);
+            return res.status(500).json('Erreurs: ' + err);
         });
 };
 
