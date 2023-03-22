@@ -122,7 +122,7 @@ const loginUser = (req, res) => {
                             );
 
                             const message = `L'utilisateur a été connecté avec succès`;
-                            res.json({ message, jeton });
+                            res.json({ message, jeton, id,  });
 
                         });
                 }))
