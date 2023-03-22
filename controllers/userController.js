@@ -155,7 +155,7 @@ const getOneUser = async (req, res) => {
 };
 
 const updateUser = (req, res) => {
-    const { nom, email, role, password, isActive } = req.body;
+    const { pseudo, email, role, password, isActive } = req.body;
     let id = req.params.id;
     let pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
 
@@ -163,9 +163,10 @@ const updateUser = (req, res) => {
         .then(response => {
             if (response) {
                 if (email.match(pattern)) {
-                    USER.update({ nom, email, role, password, isActive }, { where: { id: id } })
-                        .then(resp => {
-                            res.status(200).json({ message: 'L\'utilisateur ' + id + ' a été modifié avec succès', data: response });
+                    db.users.update({ pseudo, email, role, password, isActive }, { where: { id: id } })
+                        .then(async resp => {
+                            let getUserUpdated = await db.users.findOne({ where: { id: id }, attributes: ['pseudo', 'email', 'role', 'createdAt', 'updatedAt', "id", "isActive"] })
+                            res.status(200).json({ message: 'L\'utilisateur ' + id + ' a été modifié avec succès', data: getUserUpdated });
                         })
                         .catch(err => {
                             return res.status(500).json({ message: `L'utilisateur n'a pas été modifié`, err });
