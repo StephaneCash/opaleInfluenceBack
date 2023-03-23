@@ -25,8 +25,19 @@ const getAllCategorie = async (req, res) => {
 
 const createCategorie = async (req, res) => {
     try {
-        let newCategorie = await db.categories.create(req.body);
-        res.status(201).json({ message: "Catégorie créée avec succès", data: newCategorie })
+        if (req.file) {
+            const { nom, description } = req.body;
+
+            let newCategorie = await db.categories.create({
+                nom: nom,
+                description: description,
+                url: `api/${req.file.path}`
+            });
+            res.status(201).json({ message: "Catégorie créée avec succès", data: newCategorie })
+        } else {
+            let newCategorie = await db.categories.create(req.body);
+            res.status(201).json({ message: "Catégorie créée avec succès", data: newCategorie })
+        }
     } catch (err) {
         if (err instanceof ValidationError) {
             return res.status(400).json({
@@ -64,18 +75,33 @@ const getOneCategorie = async (req, res) => {
     }
 };
 
-const CategorieUpdated = async (req, res) => {
+const categorieUpdated = async (req, res) => {
     try {
         let id = req.params.id;
         let findCategorie = await db.categories.findOne({ where: { id: id } });
 
         if (findCategorie) {
-            let UpdateCategorie = await findCategorie.update(req.body, {
-                where: { id: id }
-            });
-            if (UpdateCategorie) {
-                let findcat = await db.categories.findOne({ where: { id: id } });
-                res.status(200).json({ message: "Catégorie a été modifiée avec succès", data: findcat });
+            if (req.file) {
+                const { nom, description } = req.body;
+                let UpdateCategorie = await findCategorie.update({
+                    nom: nom,
+                    description: description,
+                    url: `api/${req.file.path}`
+                }, {
+                    where: { id: id }
+                });
+                if (UpdateCategorie) {
+                    let findcat = await db.categories.findOne({ where: { id: id } });
+                    res.status(200).json({ message: "Catégorie a été modifiée avec succès", data: findcat });
+                }
+            } else {
+                let UpdateCategorie = await findCategorie.update(req.body, {
+                    where: { id: id }
+                });
+                if (UpdateCategorie) {
+                    let findcat = await db.categories.findOne({ where: { id: id } });
+                    res.status(200).json({ message: "Catégorie a été modifiée avec succès", data: findcat });
+                }
             }
         } else {
             res.status(404).json({ message: "Catégorie non trouvée avec l'id : " + id });
@@ -108,7 +134,7 @@ module.exports = {
     getAllCategorie,
     createCategorie,
     getOneCategorie,
-    CategorieUpdated,
+    categorieUpdated,
     deleteCategorie
 }
 
