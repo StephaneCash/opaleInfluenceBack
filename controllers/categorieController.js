@@ -24,6 +24,7 @@ const getAllCategorie = async (req, res) => {
 };
 
 const createCategorie = async (req, res) => {
+    console.log(req.file)
     try {
         if (req.file) {
             const { nom, description } = req.body;
