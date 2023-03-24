@@ -14,7 +14,7 @@ const getAllCategorie = async (req, res) => {
             }
         );
         let taille = categories.length;
-        res.status(200).json({ message: "La liste de categories a été trouvée avec succès", data: categories, taille: taille });
+        res.status(200).json(categories);
 
     } catch (error) {
         return res.status(500).json({
@@ -34,10 +34,10 @@ const createCategorie = async (req, res) => {
                 description: description,
                 url: `api/${req.file.path}`
             });
-            res.status(201).json({ message: "Catégorie créée avec succès", data: newCategorie })
+            res.status(201).json(newCategorie);
         } else {
             let newCategorie = await db.categories.create(req.body);
-            res.status(201).json({ message: "Catégorie créée avec succès", data: newCategorie })
+            res.status(201).json(newCategorie)
         }
     } catch (err) {
         if (err instanceof ValidationError) {
@@ -93,7 +93,7 @@ const categorieUpdated = async (req, res) => {
                 });
                 if (UpdateCategorie) {
                     let findcat = await db.categories.findOne({ where: { id: id } });
-                    res.status(200).json({ message: "Catégorie a été modifiée avec succès", data: findcat });
+                    res.status(200).json(findcat);
                 }
             } else {
                 let UpdateCategorie = await findCategorie.update(req.body, {
@@ -101,7 +101,7 @@ const categorieUpdated = async (req, res) => {
                 });
                 if (UpdateCategorie) {
                     let findcat = await db.categories.findOne({ where: { id: id } });
-                    res.status(200).json({ message: "Catégorie a été modifiée avec succès", data: findcat });
+                    res.status(200).json(findcat);
                 }
             }
         } else {
