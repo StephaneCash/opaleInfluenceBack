@@ -21,8 +21,7 @@ const getAllInfluenceurs = async (req, res) => {
                 ]
             }
         );
-        let taille = influeceurs.length;
-        res.status(200).json({ message: "La liste d'influenceurs a été trouvée avec succès", data: influeceurs, taille: taille });
+        res.status(200).json(influeceurs);
 
     } catch (error) {
         return res.status(500).json({
@@ -49,7 +48,7 @@ const createInfluenceur = async (req, res) => {
             res.status(201).json({ message: "Influenceur créé avec succès", data: newInfluenceur });
         } else {
             let newInfluenceur = await db.influenceurs.create(req.body);
-            res.status(201).json({ message: "Influenceur créé avec succès", data: newInfluenceur });
+            res.status(201).json(newInfluenceur);
         }
     } catch (err) {
         if (err instanceof ValidationError) {
