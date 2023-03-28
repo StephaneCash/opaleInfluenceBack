@@ -119,7 +119,7 @@ const updateInfluenceur = async (req, res) => {
                 });
                 if (updatedInfluenceur) {
                     let findInfluenceurInAll = await db.influenceurs.findOne({ where: { id: id } });
-                    res.status(200).json({ message: "Influenceur a été modifié avec succès", data: findInfluenceurInAll });
+                    res.status(200).json(findInfluenceurInAll);
                 }
             }
         } else {
@@ -138,7 +138,7 @@ const deleteInfluenceur = async (req, res) => {
         if (findInfluenceur) {
             let influeceurDeleted = await db.influenceurs.destroy({ where: { id: id } });
             if (influeceurDeleted === 1) {
-                res.status(200).json({ message: "Influenceur a été supprimé avec succès", data: findInfluenceur });
+                res.status(200).json(findInfluenceur);
             }
         } else {
             res.status(404).json({ message: "Influenceur non trouvé avec l'id : " + id });
