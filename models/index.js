@@ -37,6 +37,7 @@ db.articles = require("./articleModel")(sequelize, DataTypes);
 db.images = require("./imageModel")(sequelize, DataTypes);
 db.videos = require("./videoModel")(sequelize, DataTypes);
 db.influenceurs = require("./influenceurModel")(sequelize, DataTypes);
+db.contacts = require("./contactModel")(sequelize, DataTypes);
 
 // RELATION 1-N CATEGORIE-INFLUENCEUR
 db.categories.hasMany(db.influenceurs, {

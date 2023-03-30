@@ -16,6 +16,7 @@ const imagesRoutes = require("./routes/images.routes");
 const videosRoutes = require("./routes/videos.routes");
 const articlesRoutes = require("./routes/articles.routes");
 const userRoutes = require("./routes/users.routes");
+const contactsRouter = require("./routes/contacts.routes");
 
 app.use("/api/influenceurs", influeceursRoutes);
 app.use("/api/categories", caregoriesRoutes);
@@ -23,6 +24,7 @@ app.use("/api/images", imagesRoutes);
 app.use("/api/videos", videosRoutes);
 app.use("/api/articles", articlesRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/contacts", contactsRouter);
 
 app.use("/api/uploads", express.static('./uploads'));
 
