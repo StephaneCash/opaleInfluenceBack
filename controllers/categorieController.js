@@ -13,7 +13,6 @@ const getAllCategorie = async (req, res) => {
                 ]
             }
         );
-        let taille = categories.length;
         res.status(200).json(categories);
 
     } catch (error) {
@@ -24,7 +23,7 @@ const getAllCategorie = async (req, res) => {
 };
 
 const createCategorie = async (req, res) => {
-    console.log(req.file)
+    console.log(req.body)
     try {
         if (req.file) {
             const { nom, description } = req.body;

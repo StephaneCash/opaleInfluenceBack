@@ -12,7 +12,7 @@ const getAllUsers = (req, res) => {
         .then(resp => {
             let taille = resp.length;
             const message = "La liste des utilisateurs a été bien trouvée.";
-            res.status(200).json({ message: message, data: resp, taille });
+            res.status(200).json(resp);
         })
         .catch(err => {
             return res.status(500).json('Erreurs: ' + err);
@@ -122,7 +122,7 @@ const loginUser = (req, res) => {
                             );
 
                             const message = `L'utilisateur a été connecté avec succès`;
-                            res.json({ message, jeton, id,  });
+                            res.json({ message, jeton, id, });
 
                         });
                 }))
