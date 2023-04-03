@@ -7,7 +7,7 @@ const { ValidationError, UniqueConstraintError, ValidationErrorItem } = require(
 
 const getAllUsers = (req, res) => {
     db.users.findAll({
-        attributes: ['pseudo', 'email', 'role', 'createdAt', 'updatedAt', "id", 'isActive']
+        attributes: ['pseudo', 'email', 'role', 'createdAt', 'updatedAt', "id", 'isActive', 'url']
     })
         .then(resp => {
             let taille = resp.length;
@@ -143,7 +143,7 @@ const loginUser = (req, res) => {
 const getOneUser = async (req, res) => {
     try {
         let id = req.params.id;
-        let user = await db.users.findOne({ where: { id: id }, attributes: ['pseudo', 'email', 'role', 'createdAt', 'updatedAt', "id", "isActive"] });
+        let user = await db.users.findOne({ where: { id: id }, attributes: ['pseudo', 'email', 'role', 'createdAt', 'updatedAt', "id", "isActive", "url"] });
 
         if (user === null) {
             return res.status(404).json({ message: 'Aucun utilisateur n\'a été trouvé' });
@@ -154,33 +154,61 @@ const getOneUser = async (req, res) => {
     }
 };
 
-const updateUser = (req, res) => {
-    const { pseudo, email, role, password, isActive } = req.body;
-    let id = req.params.id;
-    let pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+const updateUser = async (req, res) => {
+    try {
+        let pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+        const { pseudo, email, password, isActive, role, } = req.body;
+        let id = req.params.id;
 
-    db.users.findOne({ where: { id: id } })
-        .then(response => {
-            if (response) {
-                if (email.match(pattern)) {
-                    db.users.update({ pseudo, email, role, password, isActive }, { where: { id: id } })
-                        .then(async resp => {
-                            let getUserUpdated = await db.users.findOne({ where: { id: id }, attributes: ['pseudo', 'email', 'role', 'createdAt', 'updatedAt', "id", "isActive"] })
-                            res.status(200).json({ message: 'L\'utilisateur ' + id + ' a été modifié avec succès', data: getUserUpdated });
-                        })
-                        .catch(err => {
-                            return res.status(500).json({ message: `L'utilisateur n'a pas été modifié`, err });
-                        });
+        let user = await db.users.findOne({ where: { id: id }, attributes: ['pseudo', 'email', 'role', 'createdAt', 'updatedAt', "id", "isActive"] });
+
+        if (user === null) {
+            return res.status(404).json({ message: 'Aucun utilisateur n\'a été trouvé avec id : ' + id });
+        } else {
+            if (req.file) {
+                if (email ? email.match(pattern) : true) {
+                    let userUpdated = await user.update(
+                        {
+                            pseudo: pseudo,
+                            email: email,
+                            password: password,
+                            role: role,
+                            isActive: isActive,
+                            url: `api/${req.file.path}`
+                        },
+                        { where: { id: id } }
+                    );
+
+                    if (userUpdated) {
+                        res.status(200).json(
+                            userUpdated
+                        )
+                    }
                 } else {
-                    return res.status(400).json({ message: `Adresse email non valide.` });
+                    return res.status(400).json({ message: "Adresse email invalide." })
                 }
             } else {
-                return res.status(404).json({ message: `L'utilisateur à modifier n'existe avec l'id ${id}` });
+                if (email ? email.match(pattern) : true) {
+                    let userUpdated = await user.update(
+                        req.body,
+                        { where: { id: id } }
+                    );
+
+                    if (userUpdated) {
+                        res.status(200).json(
+                            userUpdated
+                        )
+                    }
+                } else {
+                    return res.status(400).json({ message: "Adresse email invalide." })
+                }
             }
-        })
-        .catch(err => {
-            return res.status(400).json({ message: `L'utilisateur n'existe pas avec l'id : ${id}`, err: err });
-        });
+        }
+
+    } catch (error) {
+        return res.status(500).json({ error });
+    }
+
 };
 
 const deleteUser = (req, res) => {

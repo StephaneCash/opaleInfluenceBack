@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const categorieController = require("../controllers/categorieController");
-const upload = require('../middleware/uploadImage')
+const upload = require('../middleware/uploadImage');
 
 router.get("/", categorieController.getAllCategorie);
 router.post("/", upload, categorieController.createCategorie);
