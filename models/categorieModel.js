@@ -3,11 +3,17 @@ module.exports = (sequelize, DataTypes) => {
         nom: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
+            unique: true,
+            validate: {
+                notNull: { msg: "Le nom catégorie ne peut être vide." }
+            }
         },
         description: {
             type: DataTypes.TEXT,
             allowNull: false,
+            validate: {
+                notNull: { msg: "La description catégorie ne peut être vide." }
+            }
         },
         url: {
             type: DataTypes.STRING,
